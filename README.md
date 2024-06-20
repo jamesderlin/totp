@@ -15,3 +15,12 @@ A less minimal TOTP generator based on [MinTOTP](https://github.com/susam/mintot
   code.
 
 Auxiliary files such as build and test files also have been removed.
+
+
+## Example
+
+```shell
+$ totp
+TOTP key: <unechoed input>
+950840 (24s remaining)
+```
