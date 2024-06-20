@@ -16,17 +16,23 @@ import sys
 import time
 
 
-def hotp(key, counter, digits=6, digest='sha1'):
-    key = base64.b32decode(key.upper() + '=' * ((8 - len(key)) % 8))
-    counter = struct.pack('>Q', counter)
+def hotp(key, counter, digits=6, digest="sha1"):
+    key = base64.b32decode(key.upper() + "=" * ((8 - len(key)) % 8))
+    counter = struct.pack(">Q", counter)
     mac = hmac.new(key, counter, digest).digest()
-    offset = mac[-1] & 0x0f
-    binary = struct.unpack('>L', mac[offset:offset+4])[0] & 0x7fffffff
+    offset = mac[-1] & 0x0F
+    binary = struct.unpack(">L", mac[offset:offset + 4])[0] & 0x7FFFFFFF
     return str(binary)[-digits:].zfill(digits)
 
 
-def totp(key, time_step=30, digits=6, digest='sha1'):
-    return hotp(key, int(time.time() / time_step), digits, digest)
+def totp(key, time_step=30, digits=6, digest="sha1"):
+    """
+    Returns a tuple of the TOTP code and the number of seconds remaining for
+    its lifetime.
+    """
+    now = int(time.time())
+    return (hotp(key, now // time_step, digits, digest),
+            time_step - now % time_step)
 
 
 def normalize_key(key):
@@ -34,8 +40,11 @@ def normalize_key(key):
 
 
 def main():
-    key = getpass.getpass(prompt="TOTP key: ")
-    print(totp(normalize_key(key)))
+    key = ""
+    while not key:
+        key = getpass.getpass(prompt="TOTP key: ").strip()
+    (code, seconds_left) = totp(normalize_key(key))
+    print(f"{code} ({seconds_left}s remaining)")
 
 
 if __name__ == "__main__":

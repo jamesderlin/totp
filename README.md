@@ -11,5 +11,7 @@ A less minimal TOTP generator based on [MinTOTP](https://github.com/susam/mintot
 * Reads only one TOTP key at a time.
 * Avoids printing Python backtraces if interrupted with Ctrl+C or if an invalid
   base32 character is entered for the TOTP key.
+* Prints the number of seconds remaining for the lifetime of the generated TOTP
+  code.
 
 Auxiliary files such as build and test files also have been removed.
