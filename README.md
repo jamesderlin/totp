@@ -1,4 +1,4 @@
-#  totp
+# totp
 
 A less minimal TOTP generator based on [MinTOTP](https://github.com/susam/mintotp).
 
@@ -13,6 +13,8 @@ A less minimal TOTP generator based on [MinTOTP](https://github.com/susam/mintot
   base32 character is entered for the TOTP key.
 * Prints the number of seconds remaining for the lifetime of the generated TOTP
   code.
+* If the generated TOTP code is about to expire, additionally prints the next
+  TOTP code.
 
 Auxiliary files such as build and test files also have been removed.
 

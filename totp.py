@@ -25,14 +25,14 @@ def hotp(key, counter, digits=6, digest="sha1"):
     return str(binary)[-digits:].zfill(digits)
 
 
-def totp(key, time_step=30, digits=6, digest="sha1"):
+def totp(key, *, offset_sec=0, time_step=30, digits=6, digest="sha1"):
     """
     Returns a tuple of the TOTP code and the number of seconds remaining for
     its lifetime.
     """
-    now = int(time.time())
+    now = int(time.time()) + offset_sec
     return (hotp(key, now // time_step, digits, digest),
-            time_step - now % time_step)
+            time_step - (now % time_step))
 
 
 def normalize_key(key):
@@ -43,8 +43,14 @@ def main():
     key = ""
     while not key:
         key = getpass.getpass(prompt="TOTP key: ").strip()
-    (code, seconds_left) = totp(normalize_key(key))
+    key = normalize_key(key)
+    (code, seconds_left) = totp(key)
     print(f"{code} ({seconds_left}s remaining)")
+
+    threshold_sec = 5
+    if seconds_left <= threshold_sec:
+        (code, seconds_left) = totp(key, offset_sec=threshold_sec)
+        print(f"{code} (next code)")
 
 
 if __name__ == "__main__":
@@ -53,4 +59,5 @@ if __name__ == "__main__":
     except binascii.Error as e:
         print(e, file=sys.stderr)
     except KeyboardInterrupt:
+        print()
         sys.exit(1)
